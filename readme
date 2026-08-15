@@ -1,0 +1,440 @@
+# Medical Insurance Charges Prediction
+
+## 🎯 Project Aim
+
+The aim of this project is to build a **Machine Learning regression model that predicts medical insurance charges** based on customer demographic, lifestyle, and health-related information.
+
+The project focuses not only on building a model, but also on understanding how different features influence medical charges and comparing multiple regression algorithms to identify a suitable final model.
+
+---
+
+## 📊 Dataset
+
+The dataset contains **1,338 records** and the following 7 columns:
+
+| Feature    | Type                  | Description                            |
+| ---------- | --------------------- | -------------------------------------- |
+| `age`      | Numerical             | Age of the individual                  |
+| `sex`      | Categorical           | Gender of the individual               |
+| `bmi`      | Numerical             | Body Mass Index                        |
+| `children` | Numerical/Categorical | Number of children/dependents          |
+| `smoker`   | Categorical           | Smoking status                         |
+| `region`   | Categorical           | Residential region                     |
+| `charges`  | Numerical             | Medical insurance charges — **Target** |
+
+### Target Variable
+
+```text
+charges
+```
+
+The objective is to predict the medical insurance charges for a given individual.
+
+---
+
+# 🔎 Project Workflow
+
+The project is being developed through the following stages:
+
+```text
+Dataset
+   ↓
+Data Understanding
+   ↓
+Data Cleaning
+   ↓
+Exploratory Data Analysis
+   ↓
+Feature Understanding
+   ↓
+Feature Transformation
+   ↓
+Train/Test Split
+   ↓
+Preprocessing Pipeline
+   ↓
+Model Training
+   ↓
+Model Evaluation
+   ↓
+Model Comparison
+   ↓
+Final Model
+```
+
+---
+
+# 1. Data Understanding
+
+The dataset was first examined to understand:
+
+* Number of rows and columns
+* Data types
+* Missing values
+* Unique values
+* Distribution of categorical features
+* Distribution of numerical features
+* Target variable distribution
+
+The dataset contains:
+
+```text
+Rows:       1338
+Columns:       7
+Missing:       0
+```
+
+There are no missing values in the current dataset.
+
+---
+
+# 2. Feature Understanding
+
+### Numerical Features
+
+The main numerical features are:
+
+```text
+age
+bmi
+children
+```
+
+`age` was also explored using age groups to understand whether medical charges vary across different age ranges.
+
+### Categorical Features
+
+```text
+sex
+smoker
+region
+```
+
+These features are categorical and require encoding before being provided to most machine learning models.
+
+---
+
+# 3. Age Group Exploration
+
+Age was grouped into intervals to study the relationship between age ranges and medical charges.
+
+For example:
+
+```text
+18-25
+26-30
+31-35
+36-40
+...
+```
+
+The purpose was to understand whether different age groups have noticeably different average medical charges.
+
+However, the original `age` feature is still useful because it contains more detailed information than grouped age.
+
+Therefore, age grouping is being treated as an exploratory/feature-engineering experiment rather than automatically replacing the original feature.
+
+---
+
+# 4. Exploratory Data Analysis
+
+Several visualizations were performed to understand relationships between the features and the target.
+
+The analysis included:
+
+* Distribution of numerical features
+* Distribution of categorical features
+* Correlation heatmap
+* Numerical feature vs target analysis
+* Categorical feature vs target analysis
+* Age-group vs charges
+* Smoker vs charges
+* Region vs charges
+* BMI vs charges
+* Age vs charges
+
+A particularly important observation was the strong relationship between **smoking status and medical charges**.
+
+The dataset also shows substantial variation in charges among smokers compared with non-smokers.
+
+---
+
+# 5. Correlation Analysis
+
+Correlation was used to understand linear relationships between numerical variables.
+
+The main observations included:
+
+* `bmi` has a positive relationship with `charges`
+* `age` has a positive relationship with `charges`
+* `children` has a weaker relationship with `charges`
+* Smoking status shows a much stronger relationship with the target when analyzed categorically
+
+The correlation analysis helped identify which variables were likely to be useful for prediction.
+
+---
+
+# 6. Feature Transformation
+
+Categorical variables cannot be directly used by Linear Regression and many other machine learning algorithms.
+
+Therefore, categorical features are transformed using **One-Hot Encoding**.
+
+The current preprocessing structure is:
+
+```python
+ColumnTransformer(
+    transformers=[
+        ("num", StandardScaler(), ["age", "bmi"]),
+        ("cat", OneHotEncoder(handle_unknown="ignore"),
+         ["sex", "smoker", "region", "children"])
+    ]
+)
+```
+
+### Numerical preprocessing
+
+`StandardScaler` is used for numerical features.
+
+It standardizes features so that they have approximately:
+
+```text
+mean = 0
+standard deviation = 1
+```
+
+### Categorical preprocessing
+
+`OneHotEncoder` converts categories into separate binary features.
+
+For example, `region` is represented through separate encoded features such as:
+
+```text
+region_northeast
+region_northwest
+region_southeast
+region_southwest
+```
+
+The same principle is applied to other categorical features.
+
+---
+
+# 7. Machine Learning Pipeline
+
+Instead of manually preprocessing the data and then training the model, a `Pipeline` is being used.
+
+For example, the Linear Regression pipeline is:
+
+```python
+lr_pipeline = Pipeline([
+    ("preprocessor", preprocessor),
+    ("model", LinearRegression())
+])
+```
+
+This provides a consistent workflow:
+
+```text
+Raw Data
+   ↓
+Preprocessing
+   ↓
+One-Hot Encoding
+   ↓
+Feature Scaling
+   ↓
+Linear Regression
+```
+
+The same approach can be used for other models so that the models can be compared fairly.
+
+---
+
+# 8. Train/Test Split
+
+The dataset is divided into training and testing sets.
+
+The training set is used to learn the relationship between the features and medical charges.
+
+The test set is kept separate and used to evaluate how well the trained model performs on unseen data.
+
+---
+
+# 9. Linear Regression — Baseline Model
+
+The first model tested was **Linear Regression**.
+
+Current results:
+
+```text
+Linear Regression
+
+MAE          : 4214.91
+RMSE         : 5810.03
+R²           : 0.7826
+Adjusted R²  : 0.7687
+```
+
+### Interpretation
+
+The R² score of approximately **0.783** means that the model explains around **78.26% of the variance in medical charges**.
+
+The MAE of approximately **$4,215** means that the model's predictions differ from the actual charges by about $4,215 on average.
+
+The RMSE is approximately **$5,810**, which indicates that some larger prediction errors are present.
+
+Adjusted R² is approximately **0.769**, which accounts for the number of predictors used by the model.
+
+This Linear Regression model currently serves as the **baseline model**.
+
+---
+
+# 10. Model Comparison
+
+The next stage of the project is to train and compare additional regression algorithms.
+
+Planned/ongoing models include:
+
+```text
+1. Linear Regression
+2. Random Forest Regressor
+3. Gradient Boosting Regressor
+```
+
+The models will be compared using:
+
+```text
+MAE
+RMSE
+R²
+Adjusted R²
+```
+
+### Evaluation criteria
+
+For MAE and RMSE:
+
+```text
+Lower = Better
+```
+
+For R² and Adjusted R²:
+
+```text
+Higher = Better
+```
+
+The final model will be selected based on performance on unseen test data rather than simply choosing the most complex algorithm.
+
+---
+
+# 📈 Current Progress
+
+### Completed
+
+* [x] Dataset loaded
+* [x] Dataset structure inspected
+* [x] Data types checked
+* [x] Missing values checked
+* [x] Unique values analyzed
+* [x] Numerical features identified
+* [x] Categorical features identified
+* [x] Age-group analysis performed
+* [x] Exploratory Data Analysis completed
+* [x] Correlation analysis performed
+* [x] Feature relationships with target analyzed
+* [x] Train/test split performed
+* [x] `ColumnTransformer` created
+* [x] Numerical scaling implemented
+* [x] One-Hot Encoding implemented
+* [x] Machine Learning Pipeline created
+* [x] Linear Regression trained
+* [x] MAE calculated
+* [x] RMSE calculated
+* [x] R² calculated
+* [x] Adjusted R² calculated
+
+### 🔄 In Progress
+
+* [ ] Train Random Forest
+* [ ] Train Gradient Boosting
+* [ ] Compare all models
+* [ ] Hyperparameter tuning
+* [ ] Error analysis
+* [ ] Select final model
+* [ ] Save final preprocessing + model pipeline
+* [ ] Build prediction API
+* [ ] Test API with new user input
+
+---
+
+# 🎯 Current Goal
+
+The immediate goal is **not simply to maximize R²**.
+
+The goal is to understand:
+
+1. Which features contribute most to medical charges?
+2. How categorical variables affect predictions?
+3. How Linear Regression compares with tree-based models?
+4. Whether feature transformations improve performance?
+5. Whether hyperparameter tuning improves the selected model?
+6. How accurately the final model predicts charges on unseen data?
+
+---
+
+# ⚠️ Current Limitation
+
+The dataset contains only **1,338 records and 6 predictive features before encoding**.
+
+Medical insurance charges can depend on many real-world factors that are not available in this dataset.
+
+Therefore, even a good machine learning model may still have significant prediction error.
+
+A model with a lower R² is not necessarily a failure if the available features do not contain enough information to explain the remaining variation in the target.
+
+This project therefore focuses on **understanding the data and its limitations**, rather than artificially modifying the target or dataset simply to obtain a higher score.
+
+---
+
+# 🚀 Future Work
+
+After completing model comparison, the project can be extended with:
+
+* Hyperparameter tuning
+* Cross-validation
+* Feature importance analysis
+* Residual/error analysis
+* Model serialization
+* FastAPI backend
+* Prediction endpoint
+* Input validation
+* API testing
+* Deployment
+
+The final objective is to convert the trained machine learning model into a usable **medical insurance charge prediction API**.
+
+---
+
+# 🧠 Key Learning Outcomes
+
+Through this project, the following concepts are being practiced:
+
+* Exploratory Data Analysis
+* Feature selection
+* Feature engineering
+* Categorical encoding
+* Feature scaling
+* Train/test splitting
+* Scikit-learn pipelines
+* ColumnTransformer
+* Linear Regression
+* Random Forest
+* Gradient Boosting
+* Regression evaluation metrics
+* R² and Adjusted R²
+* Model comparison
+* Hyperparameter tuning
+* Error analysis
+* Machine Learning API development
