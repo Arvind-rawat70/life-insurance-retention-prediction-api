@@ -1,29 +1,17 @@
+import os
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from typing import Literal, Annotated
 import joblib
 import pandas as pd
 
+from schema.user_input import UserInput
+from model.predict import predict_output
 
-# Load model AND the column order it was trained on
-model = joblib.load("best_model_xgboost.pkl")
-model_columns = joblib.load("model_columns.pkl")   # <-- you need this file too
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI()
 
-
-class UserInput(BaseModel):
-    age: Annotated[int, Field(..., gt=0, lt=65, description="Age of the user")]
-    sex: Annotated[Literal["male", "female"], Field(..., description="Sex of the user")]
-    bmi: Annotated[float, Field(..., gt=0, description="BMI of the user")]
-    children: Annotated[int, Field(..., ge=0, description="Number of children")]
-    smoker: Annotated[Literal["yes", "no"], Field(..., description="Smoking status")]
-    region: Annotated[
-        Literal["northeast", "northwest", "southeast", "southwest"],
-        Field(..., description="Region of the user")
-    ]
+model_columns = joblib.load(os.path.join(BASE_DIR, "model", "model_columns.pkl"))
 
 
 def encode_input(data: UserInput, columns: list) -> pd.DataFrame:
@@ -42,14 +30,26 @@ def encode_input(data: UserInput, columns: list) -> pd.DataFrame:
     if region_col in row:
         row[region_col] = 1
 
-    # Ensures exact column order the model expects
     return pd.DataFrame([row], columns=columns)
+
+
+@app.get('/')
+def home():
+    return {'message': 'insurance premium api'}
+
+
+@app.get('/health')
+def health_check():
+    return {
+        'status': 'ok',
+        'model_loaded': predict_output is not None
+    }
 
 
 @app.post("/predict")
 def predict_premium(data: UserInput):
     input_df = encode_input(data, model_columns)
-    prediction = model.predict(input_df)[0]
+    prediction = predict_output(input_df)
 
     return JSONResponse(
         status_code=200,
