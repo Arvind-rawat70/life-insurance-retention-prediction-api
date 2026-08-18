@@ -1,44 +1,119 @@
-# Medical Insurance Charges Prediction
+🏥 Medical Insurance Charges Prediction API
 
-## 🎯 Project Aim
+A machine learning project that predicts medical insurance charges from customer demographic, lifestyle, and health-related information.
 
-The aim of this project is to build a **Machine Learning regression model that predicts medical insurance charges** based on customer demographic, lifestyle, and health-related information.
+The project includes exploratory data analysis, feature preprocessing, regression model development, an XGBoost-based prediction model, a FastAPI backend, and Docker containerization.
 
-The project focuses not only on building a model, but also on understanding how different features influence medical charges and comparing multiple regression algorithms to identify a suitable final model.
+🎯 Project Aim
 
----
+The goal of this project is to build a machine learning system that can estimate medical insurance charges for an individual based on information such as:
 
+Age
 
+Sex
 
-## 📊 Dataset
+BMI
 
-The dataset contains **1,338 records** and the following 7 columns:
+Number of children/dependents
 
-| Feature    | Type                  | Description                            |
-| ---------- | --------------------- | -------------------------------------- |
-| `age`      | Numerical             | Age of the individual                  |
-| `sex`      | Categorical           | Gender of the individual               |
-| `bmi`      | Numerical             | Body Mass Index                        |
-| `children` | Numerical/Categorical | Number of children/dependents          |
-| `smoker`   | Categorical           | Smoking status                         |
-| `region`   | Categorical           | Residential region                     |
-| `charges`  | Numerical             | Medical insurance charges — **Target** |
+Smoking status
 
-### Target Variable
+Region
 
-```text
+The project goes beyond training a model by packaging the trained model behind a FastAPI REST API and making the application available as a Docker image.
+
+🚀 Project Highlights
+
+Exploratory Data Analysis (EDA)
+
+Numerical and categorical feature analysis
+
+One-Hot Encoding for categorical variables
+
+Feature scaling with StandardScaler
+
+Scikit-learn preprocessing pipeline
+
+Regression model comparison
+
+XGBoost regression model
+
+Model serialization using Pickle
+
+Input validation with Pydantic
+
+REST API using FastAPI
+
+Interactive Swagger documentation
+
+Dockerized application
+
+Docker Hub image
+
+📊 Dataset
+
+The project is based on the medical insurance dataset containing:
+
+1,338 records
+
+7 columns
+
+Feature
+
+Type
+
+Description
+
+age
+
+Numerical
+
+Age of the individual
+
+sex
+
+Categorical
+
+Gender of the individual
+
+bmi
+
+Numerical
+
+Body Mass Index
+
+children
+
+Numerical
+
+Number of children/dependents
+
+smoker
+
+Categorical
+
+Smoking status
+
+region
+
+Categorical
+
+Residential region
+
 charges
-```
+
+Numerical
+
+Medical insurance charges — target
+
+Target Variable
+
+charges
 
 The objective is to predict the medical insurance charges for a given individual.
 
----
+🔎 Machine Learning Workflow
 
-# 🔎 Project Workflow
-
-The project is being developed through the following stages:
-
-```text
 Dataset
    ↓
 Data Understanding
@@ -62,129 +137,91 @@ Model Evaluation
 Model Comparison
    ↓
 Final Model
-```
+   ↓
+Model Serialization
+   ↓
+FastAPI
+   ↓
+Docker
+   ↓
+Docker Hub
 
----
+1. Data Understanding
 
-# 1. Data Understanding
+The dataset was examined to understand:
 
-The dataset was first examined to understand:
+Number of rows and columns
 
-* Number of rows and columns
-* Data types
-* Missing values
-* Unique values
-* Distribution of categorical features
-* Distribution of numerical features
-* Target variable distribution
+Data types
 
-The dataset contains:
+Missing values
 
-```text
+Unique values
+
+Distribution of categorical features
+
+Distribution of numerical features
+
+Target variable distribution
+
+Dataset Summary
+
 Rows:       1338
 Columns:       7
 Missing:       0
-```
 
-There are no missing values in the current dataset.
+There are no missing values in the dataset used for the project.
 
----
+2. Feature Understanding
 
-# 2. Feature Understanding
+Numerical Features
 
-### Numerical Features
-
-The main numerical features are:
-
-```text
 age
 bmi
 children
-```
 
-`age` was also explored using age groups to understand whether medical charges vary across different age ranges.
+age was also explored using age groups to understand whether medical charges vary across different age ranges.
 
-### Categorical Features
+Categorical Features
 
-```text
 sex
 smoker
 region
-```
 
-These features are categorical and require encoding before being provided to most machine learning models.
+These categorical features require encoding before being passed to most machine learning algorithms.
 
----
+3. Exploratory Data Analysis
 
-# 3. Age Group Exploration
+The project includes analysis of:
 
-Age was grouped into intervals to study the relationship between age ranges and medical charges.
+Numerical feature distributions
 
-For example:
+Categorical feature distributions
 
-```text
-18-25
-26-30
-31-35
-36-40
-...
-```
+Correlation heatmap
 
-The purpose was to understand whether different age groups have noticeably different average medical charges.
+Age vs. charges
 
-However, the original `age` feature is still useful because it contains more detailed information than grouped age.
+BMI vs. charges
 
-Therefore, age grouping is being treated as an exploratory/feature-engineering experiment rather than automatically replacing the original feature.
+Smoker vs. charges
 
----
+Region vs. charges
 
-# 4. Exploratory Data Analysis
+Age-group vs. charges
 
-Several visualizations were performed to understand relationships between the features and the target.
+Feature relationships with the target
 
-The analysis included:
+One important observation from the analysis is the strong relationship between smoking status and medical charges.
 
-* Distribution of numerical features
-* Distribution of categorical features
-* Correlation heatmap
-* Numerical feature vs target analysis
-* Categorical feature vs target analysis
-* Age-group vs charges
-* Smoker vs charges
-* Region vs charges
-* BMI vs charges
-* Age vs charges
+The data also shows substantial variation in charges between smokers and non-smokers.
 
-A particularly important observation was the strong relationship between **smoking status and medical charges**.
+4. Feature Transformation
 
-The dataset also shows substantial variation in charges among smokers compared with non-smokers.
+Categorical variables are transformed using One-Hot Encoding.
 
----
+The preprocessing approach includes:
 
-# 5. Correlation Analysis
-
-Correlation was used to understand linear relationships between numerical variables.
-
-The main observations included:
-
-* `bmi` has a positive relationship with `charges`
-* `age` has a positive relationship with `charges`
-* `children` has a weaker relationship with `charges`
-* Smoking status shows a much stronger relationship with the target when analyzed categorically
-
-The correlation analysis helped identify which variables were likely to be useful for prediction.
-
----
-
-# 6. Feature Transformation
-
-Categorical variables cannot be directly used by Linear Regression and many other machine learning algorithms.
-
-Therefore, categorical features are transformed using **One-Hot Encoding**.
-
-The current preprocessing structure is:
-
-```python
 ColumnTransformer(
     transformers=[
         ("num", StandardScaler(), ["age", "bmi"]),
@@ -192,251 +229,714 @@ ColumnTransformer(
          ["sex", "smoker", "region", "children"])
     ]
 )
-```
 
-### Numerical preprocessing
+Numerical preprocessing
 
-`StandardScaler` is used for numerical features.
+StandardScaler is used to standardize numerical variables.
 
-It standardizes features so that they have approximately:
+Approximately:
 
-```text
 mean = 0
 standard deviation = 1
-```
 
-### Categorical preprocessing
+Categorical preprocessing
 
-`OneHotEncoder` converts categories into separate binary features.
+OneHotEncoder converts categorical values into numerical binary features.
 
-For example, `region` is represented through separate encoded features such as:
+For example:
 
-```text
 region_northeast
 region_northwest
 region_southeast
 region_southwest
-```
 
-The same principle is applied to other categorical features.
+handle_unknown="ignore" helps the API handle an unseen category without failing during transformation.
 
----
+5. Machine Learning Pipeline
 
-# 7. Machine Learning Pipeline
+A Scikit-learn Pipeline and ColumnTransformer are used to keep preprocessing and model prediction consistent.
 
-Instead of manually preprocessing the data and then training the model, a `Pipeline` is being used.
+A simplified pipeline looks like:
 
-For example, the Linear Regression pipeline is:
-
-```python
-lr_pipeline = Pipeline([
-    ("preprocessor", preprocessor),
-    ("model", LinearRegression())
-])
-```
-
-This provides a consistent workflow:
-
-```text
-Raw Data
+Raw Input
    ↓
-Preprocessing
+ColumnTransformer
    ↓
-One-Hot Encoding
+Numerical Scaling
    ↓
-Feature Scaling
+Categorical One-Hot Encoding
    ↓
-Linear Regression
-```
+Regression Model
+   ↓
+Predicted Charges
 
-The same approach can be used for other models so that the models can be compared fairly.
+This prevents preprocessing logic from being duplicated between training and prediction.
 
----
+6. Baseline Model — Linear Regression
 
-# 8. Train/Test Split
+Linear Regression was used as the baseline model.
 
-The dataset is divided into training and testing sets.
-
-The training set is used to learn the relationship between the features and medical charges.
-
-The test set is kept separate and used to evaluate how well the trained model performs on unseen data.
-
----
-
-# 9. Linear Regression — Baseline Model
-
-The first model tested was **Linear Regression**.
-
-Current results:
-
-```text
-Linear Regression
+Current baseline performance:
 
 MAE          : 4214.91
 RMSE         : 5810.03
 R²           : 0.7826
 Adjusted R²  : 0.7687
-```
 
-### Interpretation
+Interpretation
 
-The R² score of approximately **0.783** means that the model explains around **78.26% of the variance in medical charges**.
+An R² of approximately 0.783 means the baseline model explains around 78.26% of the variance in medical charges on the evaluated test data.
 
-The MAE of approximately **$4,215** means that the model's predictions differ from the actual charges by about $4,215 on average.
+The MAE of approximately $4,215 represents the average absolute difference between predicted and actual charges.
 
-The RMSE is approximately **$5,810**, which indicates that some larger prediction errors are present.
+The RMSE of approximately $5,810 indicates that some larger prediction errors are present.
 
-Adjusted R² is approximately **0.769**, which accounts for the number of predictors used by the model.
+7. Final Model
 
-This Linear Regression model currently serves as the **baseline model**.
+The project uses an XGBoost regression model for the prediction API.
 
----
+The trained model artifacts are stored in the model/ directory.
 
-# 10. Model Comparison
+model/
+├── best_model_xgboost.pkl
+├── model_columns.pkl
+├── model_metadata.pkl
+├── predict.py
+└── ...
 
-The next stage of the project is to train and compare additional regression algorithms.
+The API loads the trained model and uses it to generate predictions from validated user input.
 
-Planned/ongoing models include:
+The exact final model metrics should be updated here when the final test evaluation is available.
 
-```text
+8. Project Structure
+
+insurance-api/
+│
+├── api.py
+├── dockerfile
+├── req.txt
+├── .gitignore
+│
+├── model/
+│   ├── best_model_xgboost.pkl
+│   ├── health.ipynb
+│   ├── health_model.ipynb
+│   ├── model_columns.pkl
+│   ├── model_metadata.pkl
+│   └── predict.py
+│
+└── schema/
+    └── user_input.py
+
+Main files
+
+File
+
+Purpose
+
+api.py
+
+FastAPI application and API routes
+
+dockerfile
+
+Instructions for building the Docker image
+
+req.txt
+
+Python dependencies
+
+model/best_model_xgboost.pkl
+
+Trained XGBoost model
+
+model/model_columns.pkl
+
+Stored model/input column information
+
+model/model_metadata.pkl
+
+Model metadata
+
+model/predict.py
+
+Prediction-related model logic
+
+schema/user_input.py
+
+Pydantic input schema
+
+.gitignore
+
+Files excluded from Git
+
+9. FastAPI Backend
+
+The trained machine learning model is exposed through a REST API built using FastAPI.
+
+The API is served using Uvicorn.
+
+The application starts with:
+
+uvicorn api:app --host 0.0.0.0 --port 8000
+
+API Documentation
+
+After starting the application, open:
+
+http://localhost:8000/docs
+
+This opens the interactive Swagger UI, where you can inspect endpoints and send prediction requests.
+
+Alternative documentation:
+
+http://localhost:8000/redoc
+
+10. Run Locally Without Docker
+
+Step 1 — Clone the repository
+
+git clone https://github.com/Arvind-rawat70/life-insurance-retention-prediction-api.git
+
+Then:
+
+cd insurance-api
+
+Use the repository URL and folder name corresponding to your GitHub repository.
+
+Step 2 — Create a virtual environment
+
+Windows:
+
+python -m venv .venv
+
+Activate it:
+
+.venv\Scripts\activate
+
+Step 3 — Install dependencies
+
+pip install -r req.txt
+
+Step 4 — Start FastAPI
+
+uvicorn api:app --host 0.0.0.0 --port 8000
+
+Then open:
+
+http://localhost:8000/docs
+
+🐳 Docker
+
+Docker is used to package the application together with its Python runtime and dependencies.
+
+This makes the application easier to run consistently across different environments.
+
+Dockerfile
+
+FROM python:3.11
+
+WORKDIR /app
+
+COPY req.txt .
+
+RUN pip install --no-cache-dir -r req.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+
+What the Dockerfile does
+
+Instruction
+
+Purpose
+
+FROM python:3.11
+
+Uses Python 3.11
+
+WORKDIR /app
+
+Sets /app as the working directory
+
+COPY req.txt .
+
+Copies dependency file
+
+RUN pip install ...
+
+Installs Python packages
+
+COPY . .
+
+Copies application files
+
+EXPOSE 8000
+
+Documents application port
+
+CMD ...
+
+Starts FastAPI
+
+11. Build the Docker Image
+
+Make sure Docker Desktop is running.
+
+From the project directory:
+
+docker build -t arvind886/insurance_premium-api:latest .
+
+Check the image:
+
+docker images
+
+Expected repository:
+
+arvind886/insurance_premium-api
+
+12. Run the Docker Container
+
+docker run -p 8000:8000 arvind886/insurance_premium-api:latest
+
+The mapping is:
+
+8000:8000
+  ↑     ↑
+host  container
+
+The FastAPI application will then be available at:
+
+http://localhost:8000
+
+Swagger UI:
+
+http://localhost:8000/docs
+
+13. Docker Hub
+
+The Docker image is published under:
+
+arvind886/insurance_premium-api
+
+Pull the image:
+
+docker pull arvind886/insurance_premium-api:latest
+
+Run it:
+
+docker run -p 8000:8000 arvind886/insurance_premium-api:latest
+
+The complete workflow is:
+
+Application
+    ↓
+Dockerfile
+    ↓
+docker build
+    ↓
+Docker Image
+    ↓
+docker login
+    ↓
+docker push
+    ↓
+Docker Hub
+
+14. Useful Docker Commands
+
+Check running containers
+
+docker ps
+
+Check all containers
+
+docker ps -a
+
+Check images
+
+docker images
+
+Stop a container
+
+docker stop <container_id>
+
+Remove a container
+
+docker rm <container_id>
+
+Remove an image
+
+docker rmi arvind886/insurance_premium-api:latest
+
+View container logs
+
+docker logs <container_id>
+
+15. Model Evaluation
+
+The project evaluates regression models using:
+
+MAE — Mean Absolute Error
+
+Lower = Better
+
+MAE measures the average absolute difference between actual and predicted charges.
+
+RMSE — Root Mean Squared Error
+
+Lower = Better
+
+RMSE penalizes larger prediction errors more strongly than MAE.
+
+R² Score
+
+Higher = Better
+
+R² measures how much of the variation in the target is explained by the model.
+
+Adjusted R²
+
+Higher = Better
+
+Adjusted R² accounts for the number of predictors in the model.
+
+16. Model Comparison
+
+The project initially evaluates Linear Regression and then compares it with tree-based regression algorithms.
+
+Models considered include:
+
 1. Linear Regression
 2. Random Forest Regressor
 3. Gradient Boosting Regressor
-```
+4. XGBoost Regressor
 
-The models will be compared using:
+A model comparison can be represented as:
 
-```text
+Model
+
 MAE
+
 RMSE
+
 R²
+
 Adjusted R²
-```
 
-### Evaluation criteria
+Linear Regression
 
-For MAE and RMSE:
+4214.91
 
-```text
-Lower = Better
-```
+5810.03
 
-For R² and Adjusted R²:
+0.7826
 
-```text
-Higher = Better
-```
+0.7687
 
-The final model will be selected based on performance on unseen test data rather than simply choosing the most complex algorithm.
+Random Forest
 
----
+—
 
-# 📈 Current Progress
+—
 
-### Completed
+—
 
-* [x] Dataset loaded
-* [x] Dataset structure inspected
-* [x] Data types checked
-* [x] Missing values checked
-* [x] Unique values analyzed
-* [x] Numerical features identified
-* [x] Categorical features identified
-* [x] Age-group analysis performed
-* [x] Exploratory Data Analysis completed
-* [x] Correlation analysis performed
-* [x] Feature relationships with target analyzed
-* [x] Train/test split performed
-* [x] `ColumnTransformer` created
-* [x] Numerical scaling implemented
-* [x] One-Hot Encoding implemented
-* [x] Machine Learning Pipeline created
-* [x] Linear Regression trained
-* [x] MAE calculated
-* [x] RMSE calculated
-* [x] R² calculated
-* [x] Adjusted R² calculated
+—
 
-### 🔄 In Progress
+Gradient Boosting
 
-* [ ] Train Random Forest
-* [ ] Train Gradient Boosting
-* [ ] Compare all models
-* [ ] Hyperparameter tuning
-* [ ] Error analysis
-* [ ] Select final model
-* [ ] Save final preprocessing + model pipeline
-* [ ] Build prediction API
-* [ ] Test API with new user input
+—
 
----
+—
 
-# 🎯 Current Goal
+—
 
-The immediate goal is **not simply to maximize R²**.
+—
 
-The goal is to understand:
+XGBoost
 
-1. Which features contribute most to medical charges?
-2. How categorical variables affect predictions?
-3. How Linear Regression compares with tree-based models?
-4. Whether feature transformations improve performance?
-5. Whether hyperparameter tuning improves the selected model?
-6. How accurately the final model predicts charges on unseen data?
+—
 
----
+—
 
-# ⚠️ Current Limitation
+—
 
-The dataset contains only **1,338 records and 6 predictive features before encoding**.
+—
 
-Medical insurance charges can depend on many real-world factors that are not available in this dataset.
+Replace the — values with the final test-set results after completing model evaluation.
 
-Therefore, even a good machine learning model may still have significant prediction error.
+The final model should be selected based on performance on unseen test data, not simply because it is more complex.
 
-A model with a lower R² is not necessarily a failure if the available features do not contain enough information to explain the remaining variation in the target.
+17. API Architecture
 
-This project therefore focuses on **understanding the data and its limitations**, rather than artificially modifying the target or dataset simply to obtain a higher score.
+                 Client
+                   │
+                   ▼
+             FastAPI Server
+                   │
+                   ▼
+          Pydantic Input Schema
+                   │
+                   ▼
+          Input Preprocessing
+                   │
+                   ▼
+           Trained XGBoost Model
+                   │
+                   ▼
+          Predicted Insurance Charge
+                   │
+                   ▼
+              JSON Response
 
----
+18. Why Docker?
 
-# 🚀 Future Work
+The API can be run directly using Python and req.txt, but Docker provides an isolated and reproducible runtime environment.
 
-After completing model comparison, the project can be extended with:
+Without Docker
 
-* Hyperparameter tuning
-* Cross-validation
-* Feature importance analysis
-* Residual/error analysis
-* Model serialization
-* FastAPI backend
-* Prediction endpoint
-* Input validation
-* API testing
-* Deployment
+Python
+  ↓
+pip install -r req.txt
+  ↓
+FastAPI
+  ↓
+Application
 
-The final objective is to convert the trained machine learning model into a usable **medical insurance charge prediction API**.
+With Docker
 
----
+Docker Container
+ ├── Python 3.11
+ ├── Required packages
+ ├── ML model
+ ├── FastAPI application
+ └── Uvicorn
 
-# 🧠 Key Learning Outcomes
+This makes it easier to move the application between development, testing, and deployment environments.
 
-Through this project, the following concepts are being practiced:
+19. Input Validation
 
-* Exploratory Data Analysis
-* Feature selection
-* Feature engineering
-* Categorical encoding
-* Feature scaling
-* Train/test splitting
-* Scikit-learn pipelines
-* ColumnTransformer
-* Linear Regression
-* Random Forest
-* Gradient Boosting
-* Regression evaluation metrics
-* R² and Adjusted R²
-* Model comparison
-* Hyperparameter tuning
-* Error analysis
-* Machine Learning API development
+The project uses Pydantic schemas to validate incoming API data before it reaches the machine learning model.
+
+The schema is maintained in:
+
+schema/user_input.py
+
+This provides a structured contract between the API client and the prediction service.
+
+20. Error Handling and Production Considerations
+
+For production deployment, the following should be considered:
+
+Validate all incoming inputs
+
+Handle invalid categorical values
+
+Add proper exception handling
+
+Avoid exposing internal errors
+
+Keep secrets outside source code
+
+Add logging
+
+Add API health checks
+
+Pin dependency versions
+
+Monitor model performance
+
+Keep model artifacts versioned
+
+Use HTTPS behind a production reverse proxy
+
+Avoid storing unnecessary files in the Docker image
+
+21. .gitignore
+
+The project ignores development-specific files such as:
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+.idea/
+
+This keeps unnecessary IDE, cache, environment, and secret files out of the Git repository.
+
+📈 Current Project Progress
+
+Completed
+
+Dataset loaded
+
+Dataset structure inspected
+
+Data types checked
+
+Missing values checked
+
+Unique values analyzed
+
+Numerical features identified
+
+Categorical features identified
+
+Age-group analysis
+
+Exploratory Data Analysis
+
+Correlation analysis
+
+Feature relationship analysis
+
+Train/test split
+
+ColumnTransformer
+
+Numerical scaling
+
+One-Hot Encoding
+
+Machine Learning Pipeline
+
+Linear Regression baseline
+
+Regression metrics
+
+XGBoost model
+
+Model serialization
+
+FastAPI application
+
+Pydantic input schema
+
+Dockerfile
+
+Docker image build
+
+Docker Hub image
+
+🔄 Future Improvements
+
+Add final model comparison table
+
+Hyperparameter tuning
+
+Cross-validation
+
+Feature importance analysis
+
+Residual/error analysis
+
+Add automated API tests
+
+Add CI/CD
+
+Add health-check endpoint
+
+Deploy the API to a cloud platform
+
+Add monitoring
+
+⚠️ Limitations
+
+The dataset contains 1,338 records and a limited number of predictive features.
+
+Medical insurance charges can depend on many real-world factors that are not represented in this dataset.
+
+Therefore:
+
+Predictions should be treated as estimates.
+
+Model performance depends on the available training data.
+
+A high R² does not mean every individual prediction will be accurate.
+
+Correlation does not imply causation.
+
+The model should not be treated as a substitute for actual insurance pricing or professional financial/medical advice.
+
+🧠 Key Learning Outcomes
+
+This project demonstrates practical experience with:
+
+Python
+
+Pandas
+
+NumPy
+
+Scikit-learn
+
+XGBoost
+
+Exploratory Data Analysis
+
+Feature engineering
+
+Categorical encoding
+
+Feature scaling
+
+Train/test splitting
+
+ColumnTransformer
+
+Machine learning pipelines
+
+Regression algorithms
+
+Model evaluation
+
+MAE
+
+RMSE
+
+R²
+
+Adjusted R²
+
+Model serialization
+
+Pydantic
+
+FastAPI
+
+Uvicorn
+
+Docker
+
+Docker Hub
+
+Git and GitHub
+
+🛠️ Tech Stack
+
+Language       : Python 3.11
+ML             : Scikit-learn, XGBoost
+Data           : Pandas, NumPy
+API            : FastAPI
+Validation     : Pydantic
+Server         : Uvicorn
+Container      : Docker
+Registry       : Docker Hub
+Version Control: Git / GitHub
+
+👨‍💻 Author
+
+Arvind Rawat
+
+B.Tech — Computer Science & Engineering (AI/ML)
+
+⭐ Project
+
+If you find this project useful, consider giving the repository a ⭐ on GitHub.
+
